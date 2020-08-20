@@ -1,6 +1,6 @@
 provider "tfe" {
         token = "${var.token}"
-        hostname = "${var.hotname}"
+        hostname = "${var.hostname}"
 }
 
 resource "tfe_workspace" "DESA-01" {
