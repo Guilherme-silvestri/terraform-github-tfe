@@ -37,6 +37,8 @@ resource "tfe_team" "HTFE_SECURITY_PROD" {
 
 resource "tfe_team" "HTFE_DEVELOPER_APP1_PROD" {
   name         = "HTFE_DEVELOPER_APP1_PROD"
+  organization = "${var.organization}"
+
 
 }
 
