@@ -41,4 +41,8 @@ resource "tfe_team" "HTFE_LT_APP1_PROD" {
   organization = "${var.organization}"
 }
 
+resource "tfe_team" "HTFE_SECURITY_PROD" {
+  name         = "HTFE_SECURITY_PROD"
+  organization = "${var.organization}"
+}
 

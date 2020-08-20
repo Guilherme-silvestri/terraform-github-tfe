@@ -106,3 +106,9 @@ resource "tfe_team_access" "HTFE_LT_APP1_PROD-DESA03" {
   }
 }
 
+resource "tfe_team_access" "HTFE_SECURITY_PROD-DESA03" {
+  team_id      = "${tfe_team.HTFE_LT_APP1_PROD.id}"
+  workspace_id = "${tfe_workspace.DESA-03.id}"
+  access = "admin"
+}
+
