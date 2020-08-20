@@ -12,13 +12,13 @@ resource "tfe_workspace" "DESA-01" {
 }
 
 resource "tfe_workspace" "DESA-02" {
-  name         = "DESA-02"
+  name         = "${var.terraform-github-tfe}-DESA-02"
   organization = "${var.organization}"
   auto_apply = true
 }
 
 resource "tfe_workspace" "DESA-03" {
-  name         = "DESA-03"
+  name         = "${var.terraform-github-tfe}-DESA-03"
   organization = "${var.organization}"
   auto_apply = true
 }
