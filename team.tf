@@ -1,9 +1,3 @@
-provider "tfe" {
-        token = "${var.token}"
-        hostname = "${var.hostname}"
-}
-
-
 resource "tfe_team_access" "HTFE_SOPORTE_PROD-DESA01" {
   access       = "admin"
   team_id      = "${tfe_team.HTFE_SOPORTE_PROD.id}"
