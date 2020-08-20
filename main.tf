@@ -9,7 +9,7 @@ data "tfe_workspace" "terraform-github-tfe" {
 }
 
 resource "tfe_workspace" "DESA-01" {
-  name         = "${tfe_workspace.tfe_workspace_ids.name}" "-DESA-01"
+  name         = "${tfe_workspace.terraform-github-tfe.name}" "-DESA-01"
   organization = "${var.organization}"
   auto_apply = true
 }
