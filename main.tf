@@ -4,7 +4,7 @@ provider "tfe" {
 }
 
 data "tfe_workspace" "terraform-github-tfe" {
-  names        = "terraform-github-tfe"
+  name        = "terraform-github-tfe"
   organization = "${var.organization}"
 }
 
