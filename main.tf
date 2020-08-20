@@ -3,8 +3,13 @@ provider "tfe" {
         hostname = "${var.hostname}"
 }
 
+data "tfe_workspace" "terraform-github-tfe" {
+  names        = "terraform-github-tfe"
+  organization = "${var.organization}"
+}
+
 resource "tfe_workspace" "DESA-01" {
-  name         = "DESA-01"
+  name         = "${tfe_workspace.tfe_workspace_ids.name}" "-DESA-01"
   organization = "${var.organization}"
   auto_apply = true
 }
