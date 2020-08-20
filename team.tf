@@ -12,6 +12,8 @@ resource "tfe_team_access" "HTFE_SOPORTE_PROD-DESA02" {
       state_versions = "read"
       variables = "write"
       runs = "apply"
+      sentinel_mocks = "read"
+      workspace_locking = true
   }
 }
 
