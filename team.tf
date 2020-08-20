@@ -11,7 +11,7 @@ resource "tfe_team_access" "HTFE_SOPORTE_PROD-DESA02" {
   permissions {
       state_versions = "read"
       variables = "write"
-      run = "apply"
+      runs = "apply"
   }
 }
 
