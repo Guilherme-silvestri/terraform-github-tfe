@@ -1,160 +1,78 @@
-provider "tfe" {
-        token = "${var.token}"
-        hostname = "${var.hostname}"
-
-}
-
-
-resource "tfe_workspace" "DESA-01" {
-  name         = "${var.terraform-github-tfe}-DESA-01"
-  organization = "${var.organization}"
-  auto_apply = true
-}
-
-resource "tfe_workspace" "DESA-02" {
-  name         = "${var.terraform-github-tfe}-DESA-02"
-  organization = "${var.organization}"
-  auto_apply = true
-}
-
-resource "tfe_workspace" "DESA-03" {
-  name         = "${var.terraform-github-tfe}-DESA-03"
-  organization = "${var.organization}"
-  auto_apply = true
-}
-
-resource "tfe_team" "HTFE_SOPORTE_PROD" {
-  name         = "HTFE_SOPORTE_PROD"
-  organization = "${var.organization}"
-}
-
-resource "tfe_team" "HTFE_SECURITY_PROD" {
-  name         = "HTFE_SECURITY_PROD"
-  organization = "${var.organization}"
-  organization_access {
-      manage_policies = true
-
+provider "azurerm" {
+  features {
+    
   }
 }
 
-resource "tfe_team" "HTFE_DEVELOPER_APP1_PROD" {
-  name         = "HTFE_DEVELOPER_APP1_PROD"
-  organization = "${var.organization}"
-
-
-}
-
-resource "tfe_team" "HTFE_LT_APP1_PROD" {
-  name         = "HTFE_LT_APP1_PROD"
-  organization = "${var.organization}"
-}
-
-
-resource "tfe_team_access" "HTFE_SOPORTE_PROD-DESA01" {
-  team_id      = "${tfe_team.HTFE_SOPORTE_PROD.id}"
-  workspace_id = "${tfe_workspace.DESA-01.id}"
-    permissions {
-      state_versions = "read"
-      variables = "write"
-      runs = "apply"
-      sentinel_mocks = "read"
-      workspace_locking = true
+resource "azurerm_resource_group" "RSG_Recompra" {
+  name = "RSG_Recompra"
+  location = "Brazil South"
+  tags = {
+    environment = var.environment
+    project = var.project
+    owner = var.owner
+    centroCusto = var.centroCusto
   }
 }
 
-resource "tfe_team_access" "HTFE_SOPORTE_PROD-DESA02" {
-  team_id      = "${tfe_team.HTFE_SOPORTE_PROD.id}"
-  workspace_id = "${tfe_workspace.DESA-02.id}"
-  permissions {
-      state_versions = "read"
-      variables = "write"
-      runs = "apply"
-      sentinel_mocks = "read"
-      workspace_locking = true
-  }
+resource "azurerm_virtual_network" "recompra_subnet" {
+  name = "recompra_subnet"
+  address_space = ["10.230.0.0/16"]
+  location = var.location
+  resource_group_name = azurerm_resource_group.RSG_Recompra.name
+  tags = {
+    environment = var.environment
+    project = var.project
+    owner = var.owner
+    centroCusto = var.centroCusto
+  } 
 }
 
-resource "tfe_team_access" "HTFE_SOPORTE_PROD-DESA03" {
-  team_id      = "${tfe_team.HTFE_SOPORTE_PROD.id}"
-  workspace_id = "${tfe_workspace.DESA-03.id}"
-    permissions {
-      state_versions = "read"
-      variables = "write"
-      runs = "apply"
-      sentinel_mocks = "read"
-      workspace_locking = true
-  }
+
+resource "azurerm_subnet" "recompra_subnet_front" {
+  name = "recompra_subnet_front"
+  resource_group_name = azurerm_resource_group.RSG_Recompra.name
+  virtual_network_name = azurerm_virtual_network.recompra_subnet.name
+  address_prefixes = [ "10.230.1.0/24" ]
+  
 }
 
-resource "tfe_team_access" "HTFE_DEVELOPER_APP1_PROD-DESA01" {
-  team_id      = "${tfe_team.HTFE_DEVELOPER_APP1_PROD.id}"
-  workspace_id = "${tfe_workspace.DESA-01.id}"
-    permissions {
-      state_versions = "none"
-      variables = "read"
-      runs = "plan"
-      sentinel_mocks = "none"
-      workspace_locking = false
-  }
+resource "azurerm_subnet" "recompra_subnet_backend" {
+  name = "recompra_subnet_backend"
+  resource_group_name = azurerm_resource_group.RSG_Recompra.name
+  virtual_network_name = azurerm_virtual_network.recompra_subnet.name
+  address_prefixes = [ "10.230.2.0/24" ] 
 }
 
-resource "tfe_team_access" "HTFE_DEVELOPER_APP1_PROD-DESA02" {
-  team_id      = "${tfe_team.HTFE_DEVELOPER_APP1_PROD.id}"
-  workspace_id = "${tfe_workspace.DESA-02.id}"
-    permissions {
-      state_versions = "none"
-      variables = "read"
-      runs = "plan"
-      sentinel_mocks = "none"
-      workspace_locking = false
-  }
+resource "azurerm_network_security_group" "recompra_subnet_backend_nsg" {
+  name = "recompra_subnet_backend_nsg"
+  location = var.location
+  resource_group_name = azurerm_resource_group.RSG_Recompra.name
+  
 }
 
-resource "tfe_team_access" "HTFE_DEVELOPER_APP1_PROD-DESA03" {
-  team_id      = "${tfe_team.HTFE_DEVELOPER_APP1_PROD.id}"
-  workspace_id = "${tfe_workspace.DESA-03.id}"
-    permissions {
-      state_versions = "none"
-      variables = "read"
-      runs = "plan"
-      sentinel_mocks = "none"
-      workspace_locking = false
+resource "azurerm_app_service_plan" "recompra_app_service_plan" {
+  name = "recompra_app_service_plan"
+  location = var.location
+  resource_group_name = azurerm_resource_group.RSG_Recompra.name
+  kind = "Windows"
+  sku {
+    tier = "Standard"
+    size = "s1"
   }
-}
+  }
 
-resource "tfe_team_access" "HTFE_LT_APP1_PROD-DESA01" {
-  team_id      = "${tfe_team.HTFE_LT_APP1_PROD.id}"
-  workspace_id = "${tfe_workspace.DESA-01.id}"
-    permissions {
-      state_versions = "none"
-      variables = "read"
-      runs = "apply"
-      sentinel_mocks = "none"
-      workspace_locking = false
-  }
-}
-
-resource "tfe_team_access" "HTFE_LT_APP1_PROD-DESA02" {
-  team_id      = "${tfe_team.HTFE_LT_APP1_PROD.id}"
-  workspace_id = "${tfe_workspace.DESA-02.id}"
-    permissions {
-      state_versions = "none"
-      variables = "read"
-      runs = "apply"
-      sentinel_mocks = "none"
-      workspace_locking = false
-  }
-}
-
-resource "tfe_team_access" "HTFE_LT_APP1_PROD-DESA03" {
-  team_id      = "${tfe_team.HTFE_LT_APP1_PROD.id}"
-  workspace_id = "${tfe_workspace.DESA-03.id}"
-    permissions {
-      state_versions = "none"
-      variables = "read"
-      runs = "apply"
-      sentinel_mocks = "none"
-      workspace_locking = false
-  }
+resource "azurerm_app_service" "recompra_app_service" {
+  name = "recompra-app-service"
+  location = var.location
+  resource_group_name = azurerm_resource_group.RSG_Recompra.name
+  app_service_plan_id  = azurerm_app_service_plan.recompra_app_service_plan.id
+  tags = {
+    environment = var.environment
+    project = var.project
+    owner = var.owner
+    centroCusto = var.centroCusto
+      
+  }    
 }
 
